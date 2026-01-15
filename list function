@@ -1,0 +1,58 @@
+---------------------------------------------------------------------------------------------------------------------------------
+-- Laboratory work 2 (Variant 2)
+-- Task 3
+-- Prove: law about list functions - length.map f = length
+---------------------------------------------------------------------------------------------------------------------------------
+-- for using readMaybe
+import Text.Read (readMaybe)
+8
+-- define a list before modifications
+function_length :: [a] -> Int
+function_length [] = 0
+function_length (_:xs) = 1 + function_length xs
+--define a mapped list
+myMap :: (a -> b) -> [a] -> [b]
+myMap _ [] = []
+myMap f (x:xs) = f x : myMap f xs
+--------------------------------------------------------------------------------------------------------------------------------
+-- function for comparing the length and mapped length of the lists
+comparing_defined :: (a -> b) -> [a] -> Bool
+comparing_defined f xs = function_length (myMap f xs) == function_length xs
+--------------------------------------------------------------------------------------------------------------------------------
+-- for checking if the list contain integers or strings
+listNumbers :: [String] -> Bool
+listNumbers = all (\x -> (readMaybe x :: Maybe Int) /= Nothing)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Main part
+main :: IO ()
+main = do
+--ask user to enter the list (strings or integers)
+ putStrLn "Please, enter the list of integers separated by spaces (for example: 1 2 3):"
+ user <- getLine
+ let values = words user
+-- if the provided list contains integers
+ if listNumbers values then do
+ let xs = map read (words user) :: [Int]
+ putStrLn "\nProvided function for checking: f x = x * 12"
+--function which take each value and multiply by 12 (mapped)
+ let f x = x * 12
+-- display all the lists and boolean statement
+ putStrLn $ "List before modifications: " ++ show xs
+ putStrLn $ "List after modifications (mapped): " ++ show (map f xs)
+ putStrLn $ "Length of original list: " ++ show (length xs)
+ putStrLn $ "Length of mapped list: " ++ show (length (map f xs))
+ putStrLn $ "Is the list after modifications in the same size as before?" ++ show (comparing_defined f
+xs)
+ putStrLn $ "------------------------------------------------------------------------------"
+-- if the provided list contains strings
+ else do
+ let xs = values
+ putStrLn "\nProvided function for checking: f s = s ++ ? "
+-- function which take each value and add question sign (mapped)
+ let f s = s ++ "?"
+--display all the lists and boolean statement
+ putStrLn $ "List before modifications: " ++ show xs
+ putStrLn $ "List after modifications (mapped): " ++ show (map f xs)
+ putStrLn $ "Length of original list: " ++ show (length xs)
+ putStrLn $ "Length of mapped: " ++ show (length (map f xs))
+ putStrLn $ "Law about list functions: true or not?" ++ show (comparing_defined f xs)
