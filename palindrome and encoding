@@ -1,0 +1,60 @@
+---------------------------------------------------------------------------------------------------------------------------------
+-- Laboratory work 2 (Variant 2)
+-- Task 2
+-- Subtask 1: Provide function that determines if list is a palindrome
+-- Subtask 2: Define function that contstruct original list by run_length-encoded version
+---------------------------------------------------------------------------------------------------------------------------------
+import Data.List (group)
+import Text.Read (readMaybe)
+--Palindrome check (SubTask 1)
+palindrome_list :: (Eq a) => [a] -> Bool
+palindrome_list xs = xs == reverse xs
+---------------------------------------------------------------------------------------------------------------------------------
+-- run_length encoded version
+encodeVersion :: (Eq a) => [a] -> [(Int, a)]
+encodeVersion xs = map (\e -> (length e, head e)) (group xs)
+-- run_length decoded version
+decodeVersion :: [(Int, a)] -> [a]
+decodeVersion xs = concatMap (\(d, val) -> replicate d val) xs
+---------------------------------------------------------------------------------------------------------------------------------
+-- Helper: Check if input can be parsed as numbers
+listNumbers :: [String] -> Bool
+listNumbers = all (\x -> (readMaybe x :: Maybe Int) /= Nothing)
+---------------------------------------------------------------------------------------------------------------------------------
+-- Main Part
+main :: IO ()
+main = do
+-- ask user to enter the list
+ putStrLn "Please, enter the list separated by spaces (integers or strings): "
+ user <- getLine
+ let listMain = words user
+-- check if the list containt only integers
+ if listNumbers listMain then do
+ let integers = map read listMain :: [Int]
+-- Palindrome check
+ putStrLn "\n--- Palindrome Check (with Numbers) ---"
+ if palindrome_list integers
+ then putStrLn "This list is a palindrome."
+ else putStrLn "This list is not a palindrome."
+-- Encode version of the list
+ putStrLn "\n--- Run-Length Encode & Decode (with Numbers) ---"
+ let encodeResult = encodeVersion integers
+ putStrLn $ "Encoded version of this list: \n" ++ show encodeResult
+-- Decode version of the list
+ let decodeResult = decodeVersion encodeResult
+ putStrLn $ "Decoded list: \n" ++ show decodeResult
+-- If the list contains strings
+ else do
+ let strings = listMain
+-- Palindrome check
+ putStrLn "\n--- Palindrome Check (with Words) ---"
+ if palindrome_list strings
+ then putStrLn "This list is a palindrome."
+ else putStrLn "This list is not a palindrome."
+-- Encode version of the list (strings)
+ putStrLn "\n--- Subtask 2: Run-Length Encode & Decode (Words) ---"
+ let encodeResult = encodeVersion strings
+ putStrLn $ "Encoded version of this list: \n" ++ show encodeResult
+-- Decode version of the list (strings)
+ let decodeResult = decodeVersion encodeResult
+ putStrLn $ "Decoded list: \n" ++ show decodeResult
