@@ -1,0 +1,111 @@
+---------------------------------------------------------------------------------------------------------------------------------
+-- Laboratory work 2 (Variant 2)
+-- Task 4
+-- Task: Implement binary search trees and print them nicely
+---------------------------------------------------------------------------------------------------------------------------------
+-- Identify data tree
+10
+data Tree a = Branch a (Tree a) (Tree a) | Leaf
+ deriving (Eq)
+---------------------------------------------------------------------------------------------------------------------------------
+-- Check if the search binary tree is valid
+---------------------------------------------------------------------------------------------------------------------------------
+isSearchTree :: Ord a => Tree a -> Bool
+isSearchTree Leaf = True
+isSearchTree (Branch x left right) =
+ all (< x) (treeList left) && all (> x) (treeList right)
+ && isSearchTree left && isSearchTree right
+---------------------------------------------------------------------------------------------------------------------------------
+-- Convert tree to a list (inorder traversal)
+---------------------------------------------------------------------------------------------------------------------------------
+treeList :: Tree a -> [a]
+treeList Leaf = []
+treeList (Branch x left right) = treeList left ++ [x] ++ treeList right
+---------------------------------------------------------------------------------------------------------------------------------
+-- Insert new element in this Tree
+---------------------------------------------------------------------------------------------------------------------------------
+insertTree :: Ord a => a -> Tree a -> Tree a
+insertTree n Leaf = Branch n Leaf Leaf
+insertTree n (Branch x left right)
+ | n <= x = Branch x (insertTree n left) right
+ | otherwise = Branch x left (insertTree n right)
+---------------------------------------------------------------------------------------------------------------------------------
+-- Build a tree from a list of values
+---------------------------------------------------------------------------------------------------------------------------------
+buildTree :: Ord a => [a] -> Tree a
+buildTree = foldr insertTree Leaf
+---------------------------------------------------------------------------------------------------------------------------------
+-- Pretty print tree structure (without showing Leaf nodes)
+---------------------------------------------------------------------------------------------------------------------------------
+printTree :: (Show a) => Tree a -> IO ()
+printTree tree = putStrLn (unlines (draw tree))
+ where
+ draw Leaf = [] -- Don't show Leaf nodes
+ draw (Branch x Leaf Leaf) = [show x] -- Only show value for leaf nodes with no children
+ draw (Branch x left right) =
+ [show x] ++ drawSubTrees left right
+ -- function which is called after each value to make new spaces for the rest of the values
+ drawSubTrees left right =
+ case (left, right) of
+ (Leaf, Leaf) -> []
+ (Leaf, _) -> shift "└── " " " (draw right) -- leaf for the values which is greater than x
+ (_, Leaf) -> shift "├── " "│ " (draw left) -- leaf for the values which is smaller than x
+ (_, _) -> shift "├── " "│ " (draw left) ++ shift "└── " " " (draw right) -- combination of both
+leafs
+shift first other [] = [] -- if the list is empty, return empty
+ shift first other (x:xs) = (first ++ x) : map (other ++) xs -- separate the first value to manipulate
+differently from the others values
+---------------------------------------------------------------------------------------------------------------------------------
+-- Wrong version to check the validation function
+---------------------------------------------------------------------------------------------------------------------------------
+insertTreeWrong :: Ord a => a -> Tree a -> Tree a
+insertTreeWrong n Leaf = Branch n Leaf Leaf
+insertTreeWrong n (Branch x left right)
+ | n <= x = Branch x left (insertTreeWrong n right) -- wrong part
+ | otherwise = Branch x (insertTreeWrong n left) right
+---------------------------------------------------------------------------------------------------------------------------------
+-- Main Part
+---------------------------------------------------------------------------------------------------------------------------------
+main :: IO ()
+main = do
+---------------------------------------------------------------------------------------------------------------------------------
+-- Test
+---------------------------------------------------------------------------------------------------------------------------------
+ let test = buildTree [12,3,7,2,9,6,8]
+ printTree test
+ putStrLn $ "\nStill a binary search tree?:" ++ show (isSearchTree test)
+ let testSecond = insertTree 23 test
+ printTree testSecond
+ putStrLn $ "\nStill a binary search tree? (after adding new value):" ++ show (isSearchTree testSecond)
+ let wrong = insertTreeWrong 0 test
+ printTree wrong
+ putStrLn $ "\nStill a binary search tree? (with wrong tree): " ++ show (isSearchTree wrong)
+ putStrLn "-------------------------------------------------------------------------------------"
+---------------------------------------------------------------------------------------------------------------------------------
+-
+
+-- aks user to enter the values for a tree
+ putStrLn "\nPlease, enter the values for your tree (separated by spaces):"
+ input <- getLine
+--convert all values to integers
+ let values = map read (words input) :: [Int]
+-- create new tree with provided rules
+ let tree = buildTree values
+-- show created tree
+ putStrLn "\nYour tree structure:"
+ printTree tree
+-- boolean expression which checks if the tree is formulated rightly
+ putStrLn $ "\nIs it a binary search tree? " ++ show (isSearchTree tree)
+-- insert new value to the tree
+ putStrLn "\nEnter a new value to insert into the tree:"
+ newValueLine <- getLine
+-- convert the user input to integer
+let newValue = read newValueLine :: Int
+-- call the function for adding new value into the tree
+ let newTree = insertTree newValue tree
+-- show modified tree with the new value
+ putStrLn "\nTree after insertion:"
+ printTree newTree
+-- check if the tree is formed correctly
+ putStrLn $ "\nStill a binary search tree? " ++ show (isSearchTree newTree)
+
