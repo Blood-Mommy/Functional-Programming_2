@@ -1,0 +1,35 @@
+---------------------------------------------------------------------------------------------------------------------------------
+-- Laboratory work 2 (Variant 2)
+-- Task: function take list of lists as a parameter, and sort a list of lists according to length of sublists
+---------------------------------------------------------------------------------------------------------------------------------
+-- for using sortBy function
+import Data.List (sortBy)
+--function that sort list of lists based on length of each list
+list_of_lists :: [[a]] -> [[a]]
+list_of_lists xs = sortBy (\a b -> compare (length a) (length b)) xs
+---------------------------------------------------------------------------------------------------------------------------------
+-- Main Part
+main :: IO ()
+main = do
+-- ask user to enter the values for lists
+ putStrLn "Please, enter the your first list in one line with spaces (for example, 1 2 3):"
+ l1 <- getLine
+ putStrLn "Please, enter the your second list in one line with spaces (for example, 1 2 3):"
+ l2 <- getLine
+ putStrLn "Please, enter the your third list in one line with spaces (for example, 1 2 3):"
+ l3 <- getLine
+ putStrLn "Please, enter the your thourth list in one line with spaces (for example, 1 2 3):"
+ l4 <- getLine
+-- convert each list of values from string to integers
+ let values1 = map read (words l1) :: [Int]
+ values2 = map read (words l2) :: [Int]
+ values3 = map read (words l3) :: [Int]
+ values4 = map read (words l4) :: [Int]
+-- define list of lists before modifications
+ listMain = [values1, values2, values3, values4]
+-- display list of lists
+ putStrLn $ "\nYour list of lists before sorting: \n" ++ show listMain
+-- define sorted list of lists
+ let sortedList = list_of_lists listMain
+-- display list after modifications
+ putStrLn $ "\nYour sorted list: \n" ++ show sortedList
